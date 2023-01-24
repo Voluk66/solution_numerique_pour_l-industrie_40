@@ -1,0 +1,7 @@
+- name: testing ansible
+  hosts: me
+  tasks:
+    - name: Install mosquitto
+      ansible.builtin.package:
+        name: mosquitto
+        state: present
