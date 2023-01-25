@@ -1,20 +1,3 @@
-Vo£uK
-#1028
-
-GiBdN — 21/10/2022 09:32
-https://discord.gg/R9JxKWUV
-Vo£uK — Hier à 13:26
-https://iconic-treat-375111.nw.r.appspot.com/
-OuternShip
-Vo£uK — Hier à 15:00
-XD
-oulala on l'avais pas predit
-GiBdN — Hier à 15:00
-😦
-GiBdN — Aujourd’hui à 13:54
-
-Image
-GiBdN — Aujourd’hui à 14:03
 /*
   ArduinoMqttClient - WiFi Simple Sender
 
@@ -95,29 +78,33 @@ void loop() {
   // call poll() regularly to allow the library to send MQTT keep alives which
   // avoids being disconnected by the broker
   mqttClient.poll();
-
+  
   double h = dht.readHumidity();
   double t = dht.readTemperature();
 
   // to avoid having delays in loop, we'll use the strategy from BlinkWithoutDelay
   // see: File -> Examples -> 02.Digital -> BlinkWithoutDelay for more info
   unsigned long currentMillis = millis();
-
+  
   if (currentMillis - previousMillis >= interval) {
     // save the last time a message was sent
     previousMillis = currentMillis;
 
     if (isnan(h) || isnan(t)) {
-      Serial.println("Erreur lors de la lecture des donnÃ©es du capteur DHT22!");
+      Serial.println("Erreur lors de la lecture des données du capteur DHT22!");
       return;
     }
 
     String send = "{\n\t\"topic\" : \"ESIEA/grp8_test\",\n\t\"data\" : {\n\t\t\"temperature\" : " + String(t) + ",\n\t\t\"humidity\" : " + String(h) + "\n\t}\n}";
 
     Serial.print("Sending message to topic: ");
-... (10 lignes restantes)
-Réduire
-mqtt_sender.ino
-4 Ko
-﻿
-GiBdN#7343
+    Serial.println(topic);
+
+    // send message, the Print interface can be used to set the message contents
+    mqttClient.beginMessage(topic);
+    mqttClient.print(send);
+    mqttClient.endMessage();
+
+    Serial.println();
+  }
+}
