@@ -1,0 +1,403 @@
+[
+    {
+        "id": "c5d0a023c2c7c51d",
+        "type": "tab",
+        "label": "GRP8",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "1c6986a33d3f3bb8",
+        "type": "group",
+        "z": "c5d0a023c2c7c51d",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "a61318d4d18ab994",
+            "dd8e13151d9ed276",
+            "7d915130ee8608ca"
+        ],
+        "x": 54,
+        "y": 459,
+        "w": 512,
+        "h": 82
+    },
+    {
+        "id": "8f2574d09d0d1a67",
+        "type": "mqtt in",
+        "z": "c5d0a023c2c7c51d",
+        "name": "HiveMQ Public Broker",
+        "topic": "spBv1.0/ESIEA/DDATA/raspberry/esp8266_8",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "ccbd8c9ffa049e98",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 100,
+        "wires": [
+            [
+                "4f954d25a0230178"
+            ]
+        ]
+    },
+    {
+        "id": "3ec09d1a65b63a81",
+        "type": "comment",
+        "z": "c5d0a023c2c7c51d",
+        "name": "Public broker - not connected",
+        "info": "Public broker\nPublic topic\n\nPrivate cluster : need a TLS certificate to be used. Paid feature.",
+        "x": 140,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "f3c1230dcfd94f74",
+        "type": "debug",
+        "z": "c5d0a023c2c7c51d",
+        "name": "Encoded",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "0343d54919df1829",
+        "type": "inject",
+        "z": "c5d0a023c2c7c51d",
+        "name": "",
+        "props": [],
+        "repeat": "3",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 90,
+        "y": 260,
+        "wires": [
+            [
+                "cdd2a060995db20f"
+            ]
+        ]
+    },
+    {
+        "id": "720c16c766592d59",
+        "type": "function",
+        "z": "c5d0a023c2c7c51d",
+        "name": "JSON Generator",
+        "func": "const json = `[\\\n    {\\\n        \\\"name\\\":\\ \\\"temperature\\\",\\\n        \\\"datatype\\\":\\ 12,\\\n        \\\"doubleValue\\\": ${msg.payload.temperature}\\\n    },\\\n    {\\\n        \\\"name\\\": \\\"humidity\\\",\\\n        \\\"datatype\\\":\\ 12,\\\n        \\\"doubleValue\\\": ${msg.payload.humidity}\\\n    }\\\n]`;\n\n//clean payload to only keep the JSON\ndelete msg.payload.temperature;\ndelete msg.payload.humidity;\n\nmsg.payload.metrics = JSON.parse(json);\nmsg.retain = true;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 360,
+        "wires": [
+            [
+                "d113c60a67982948",
+                "5f475491aa778eca"
+            ]
+        ]
+    },
+    {
+        "id": "4f954d25a0230178",
+        "type": "function",
+        "z": "c5d0a023c2c7c51d",
+        "name": "Data split",
+        "func": "var splitted = msg.payload;\nvar values = splitted.split(\"/\");\n\nmsg.payload = {};\nmsg.payload.temperature = values[0];\nmsg.payload.humidity = values[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d113c60a67982948",
+        "type": "encode",
+        "z": "c5d0a023c2c7c51d",
+        "name": "",
+        "protofile": "13f96ca11fe07116",
+        "protoType": "Payload",
+        "x": 620,
+        "y": 400,
+        "wires": [
+            [
+                "f3c1230dcfd94f74",
+                "5b8cce5daefe5604"
+            ]
+        ]
+    },
+    {
+        "id": "5b8cce5daefe5604",
+        "type": "mqtt out",
+        "z": "c5d0a023c2c7c51d",
+        "name": "RIO Rasp",
+        "topic": "spBv1.0/ESIEA/DDATA/raspberry/esp8266_8",
+        "qos": "2",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "23a49d1cb37ff5cf",
+        "x": 760,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "5a0c617f4907e609",
+        "type": "comment",
+        "z": "c5d0a023c2c7c51d",
+        "name": "Publish Rasp",
+        "info": "",
+        "x": 770,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "5f475491aa778eca",
+        "type": "debug",
+        "z": "c5d0a023c2c7c51d",
+        "name": "JSON",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "7a5c60c73e8541ef",
+        "type": "debug",
+        "z": "c5d0a023c2c7c51d",
+        "name": "Raw",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 390,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "cdd2a060995db20f",
+        "type": "function",
+        "z": "c5d0a023c2c7c51d",
+        "name": "Data Generator",
+        "func": "//generate random data\nconst temperature = Math.round(Math.random() * 1000) / 10;\nconst humidity = Math.round(Math.random() * 1000) / 10;\n\nmsg.payload = {};\nmsg.payload.temperature = temperature;\nmsg.payload.humidity = humidity;\n\nreturn msg;\n\n/* FOR HIVEMQ PUBLIC BROKER (mqtt-in)\nvar splitted = msg.payload;\nvar values = splitted.split(\"/\");\n\nmsg.payload = {};\nmsg.payload.temperature = values[0];\nmsg.payload.humidity = values[1];\nreturn msg;*/",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 320,
+        "wires": [
+            [
+                "720c16c766592d59",
+                "7a5c60c73e8541ef"
+            ]
+        ]
+    },
+    {
+        "id": "26b16e0f93a01206",
+        "type": "comment",
+        "z": "c5d0a023c2c7c51d",
+        "name": "LINK : Data -> JSON Generator",
+        "info": "",
+        "x": 410,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "a61318d4d18ab994",
+        "type": "mqtt in",
+        "z": "c5d0a023c2c7c51d",
+        "d": true,
+        "g": "1c6986a33d3f3bb8",
+        "name": "RIO Rasp",
+        "topic": "spBv1.0/ESIEA/DDATA/raspberry/esp8266_8",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "faac6e3cda321b4e",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 500,
+        "wires": [
+            [
+                "dd8e13151d9ed276"
+            ]
+        ]
+    },
+    {
+        "id": "dd8e13151d9ed276",
+        "type": "decode",
+        "z": "c5d0a023c2c7c51d",
+        "d": true,
+        "g": "1c6986a33d3f3bb8",
+        "name": "",
+        "protofile": "13f96ca11fe07116",
+        "protoType": "Payload",
+        "x": 300,
+        "y": 500,
+        "wires": [
+            [
+                "7d915130ee8608ca"
+            ]
+        ]
+    },
+    {
+        "id": "7d915130ee8608ca",
+        "type": "debug",
+        "z": "c5d0a023c2c7c51d",
+        "d": true,
+        "g": "1c6986a33d3f3bb8",
+        "name": "Decoded",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "bd5a6f4cf19bf523",
+        "type": "comment",
+        "z": "c5d0a023c2c7c51d",
+        "name": "Manual generation",
+        "info": "",
+        "x": 110,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "ccbd8c9ffa049e98",
+        "type": "mqtt-broker",
+        "name": "HiveMQ Public",
+        "broker": "broker.hivemq.com",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "13f96ca11fe07116",
+        "type": "protobuf-file",
+        "protopath": "/etc/node-red/sparkplug_b.proto",
+        "watchFile": true,
+        "keepCase": false
+    },
+    {
+        "id": "23a49d1cb37ff5cf",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "192.168.1.4",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "faac6e3cda321b4e",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "192.168.1.3",
+        "port": "1883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]
